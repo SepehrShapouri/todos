@@ -1,7 +1,7 @@
 //@ts-nocheck
 "use client";
 import React, { useState, useEffect } from "react";
-import { format, addDays, subDays } from "date-fns";
+import { format, addDays } from "date-fns";
 import { LayoutGroup, motion, AnimatePresence } from "framer-motion";
 
 const CustomDatePicker = () => {
@@ -66,6 +66,25 @@ const CustomDatePicker = () => {
     setAnimationComplete(true);
   };
 
+  // Define animation variants
+  const variants = {
+    hidden: (direction) => ({
+      opacity: 0,
+      x: direction === "left" ? -50 : 50,
+      scale: 0.9,
+    }),
+    visible: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+    },
+    exit: (direction) => ({
+      opacity: 0,
+      x: direction === "left" ? 50 : -50,
+      scale: 0.9,
+    }),
+  };
+
   return (
     <div className="flex justify-center items-center mt-10">
       <div className="flex space-x-2 bg-white p-4 rounded-lg shadow-md w-full relative">
@@ -74,22 +93,25 @@ const CustomDatePicker = () => {
             {visibleDays.map((date, index) => {
               const isSelected =
                 format(date, "yyyy-MM-dd") === format(selectedDate, "yyyy-MM-dd");
+              const direction = index < 2 ? "left" : "right";
 
               return (
                 <motion.div
                   key={format(date, "yyyy-MM-dd")}
-                  className={`flex flex-col items-center justify-center w-16 h-16 cursor-pointer rounded-xl relative`}
+                  className={`flex flex-col items-center justify-center w-16 h-16 cursor-pointer rounded-xl relative shrink-0 ${isSelected && 'text-white'}`}
                   onClick={() => handleDateChange(date)}
-                  initial={{ opacity: 0, x: index < 2 ? -50 : 50 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: index < 2 ? 50 : -50 }}
-                  transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                  custom={direction}
+                  initial="hidden"
+                  animate="visible"
+                  exit="exit"
+                  variants={variants}
+                  transition={{ type: "spring", stiffness: 300, damping: 20, duration: 0.6 }}
                 >
                   <div className="z-10 text-sm">{format(date, "EEE")}</div>
                   <div className="z-10 text-lg">{format(date, "d")}</div>
                   {isSelected && (
                     <motion.div
-                      className="absolute bg-blue-200 top-0 left-0 w-16 h-16 rounded-xl"
+                      className="absolute bg-blue-200 top-0 left-0 w-16 h-16 rounded-xl shrink-0"
                       layoutId="blue-square"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
