@@ -1,5 +1,6 @@
-import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
 import { Lucia } from "lucia";
+import { PrismaAdapter } from "@lucia-auth/adapter-prisma";
+import { PrismaClient, User } from "@prisma/client";
 import { db } from "../../db";
 const adapter = new PrismaAdapter(db.session, db.user); // your adapter
 
@@ -17,8 +18,6 @@ export const lucia = new Lucia(adapter, {
     return {
       username: attributes.username,
       id: attributes.id,
-      name:attributes.name,
-      lastname:attributes.lastname,
       updatedAt: attributes.updatedAt,
       createdAt: attributes.createdAt,
       email: attributes.email,
@@ -38,8 +37,6 @@ interface DatabaseUserAttributes {
   id: string;
   email: string;
   username: string;
-  name:string;
-  lastname:string;
   password_hash: string;
   createdAt: Date;
   updatedAt: Date;

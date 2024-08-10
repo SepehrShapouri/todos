@@ -5,5 +5,14 @@ const withPWA = withPWAInit({
 });
 
 export default withPWA({
-  // Your Next.js config
+  eslint:{
+      ignoreDuringBuilds: true,
+    },
+    typescript:{
+      ignoreBuildErrors:true
+    },
+    images:{domains:['utfs.io']},
+    experimental:{
+      serverComponentsExternalPackages:['@node-rs/argon2']
+    }
 });

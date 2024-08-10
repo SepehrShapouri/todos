@@ -1,8 +1,10 @@
-import { User } from "@prisma/client";
-import { lucia } from "./auth";
-import { cache } from "react";
+'use server'
+
+import { Session,User } from "lucia";
 import { cookies } from "next/headers";
-import  type {Session} from "lucia"
+import { cache } from "react";
+import { lucia } from "./auth";
+
 export const validateRequest = cache(
     async (): Promise<
       { user: User; session: Session } | { user: null; session: null }
