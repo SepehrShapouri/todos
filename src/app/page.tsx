@@ -35,6 +35,7 @@ import { Pen, PlusIcon } from "lucide-react";
 import React, { useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { createTodo } from "@/components/createTodo/actions";
 const TODOS = [
   {
     id: 1,
@@ -94,6 +95,18 @@ const TODOS = [
 function page() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
+  const [todoOptions, setTodoOptions] = useState({
+    title: "",
+    time:{hour:'',minute:''},
+    category: "",
+    color: "",
+    description: "",
+    completed:false,
+    dueDate:selectedDate
+  });
+  function addTodo(){
+    createTodo(todoOptions)
+  }
   return (
     <MaxWidthWrapper>
       <div className="w-full p-6 flex items-center justify-center flex-col gap-2">
@@ -149,7 +162,7 @@ function page() {
         </span>
       </div>
       <Drawer open={addTodoModal}>
-        <DrawerContent>
+        <DrawerContent className="pb-6">
           <DrawerHeader>
             <DrawerTitle>Add todo</DrawerTitle>
             <DrawerDescription>
@@ -160,12 +173,16 @@ function page() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label htmlFor="title">Title</Label>
-                <Input id="title" placeholder="Buy groceries" />
+                <Input id="title" placeholder="Buy groceries" value={todoOptions.title} onChange={(e)=>setTodoOptions((prev)=>({...prev,title:e.target.value}))}/>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">description</Label>
+                <Input id="description" placeholder="Buy groceries" value={todoOptions.description} onChange={(e)=>setTodoOptions((prev)=>({...prev,description:e.target.value}))}/>
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="due-hours">Due Time (Hours)</Label>
-                  <Select id="due-hours">
+                  <Select id="due-hours" value={todoOptions.time.hour} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,time:{...prev.time,hour:e}}))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select hours" />
                     </SelectTrigger>
@@ -183,7 +200,7 @@ function page() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="due-minutes">Minutes</Label>
-                  <Select id="due-minutes">
+                  <Select id="due-minutes" value={todoOptions.time.minute} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,time:{...prev.time,minute:e}}))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Select minutes" />
                     </SelectTrigger>
@@ -202,7 +219,7 @@ function page() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="color">Color</Label>
-                <Select id="color">
+                <Select id="color" value={todoOptions.color} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,color:e}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select color" />
                   </SelectTrigger>
@@ -242,7 +259,7 @@ function page() {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="category">Category</Label>
-                <Select id="category">
+                <Select id="category" value={todoOptions.category} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,category:e}))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select category" />
                   </SelectTrigger>
@@ -258,9 +275,11 @@ function page() {
             </CardContent>
           </div>
           <DrawerFooter>
-            <Button className="bg-sky-200">Add</Button>
+            <Button className="bg-sky-200" onClick={addTodo}>Add</Button>
             <DrawerClose>
-              <Button variant="secondary" className="w-full">Never mind</Button>
+              <Button variant="secondary" className="w-full">
+                Never mind
+              </Button>
             </DrawerClose>
           </DrawerFooter>
         </DrawerContent>

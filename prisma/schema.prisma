@@ -8,9 +8,9 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
+  id            String    @id @default(cuid())
   email         String
-  username      String?
+  username      String
   password_hash String
   Todos         Todos[]
   sessions      Session[]
@@ -19,14 +19,18 @@ model User {
 }
 
 model Todos {
-  id        String   @id @default(cuid())
-  completed Boolean  @default(false)
-  title     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  createdAtDate DateTime @default(dbgenerated())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    String
+  id          String   @id @default(cuid())
+  completed   Boolean  @default(false)
+  title       String
+  description String
+  category    String
+  color       String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  time        String
+  dueDate     DateTime @default(dbgenerated())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
 }
 
 model Session {
