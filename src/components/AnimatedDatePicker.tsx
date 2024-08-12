@@ -3,9 +3,11 @@
 import React, { useState, useEffect } from "react";
 import { format, addDays } from "date-fns";
 import { LayoutGroup, motion, AnimatePresence } from "framer-motion";
+import toLocalDateShort, { toEnglishNumbers } from "@/lib/persian";
+import { cn } from "@/lib/utils";
 
-const CustomDatePicker = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+const CustomDatePicker = ({selectedDate,setSelectedDate}) => {
+  // const [selectedDate, setSelectedDate] = useState(new Date());
   const [visibleDays, setVisibleDays] = useState([]);
   const [animationComplete, setAnimationComplete] = useState(true);
 
@@ -86,7 +88,7 @@ const CustomDatePicker = () => {
   };
 
   return (
-    <div className="flex justify-center items-center mt-10">
+    <div className="flex justify-center items-center mt-2">
       <div className="flex space-x-2 bg-white p-4 rounded-lg shadow-md w-full relative">
         <LayoutGroup>
           <AnimatePresence>
@@ -98,7 +100,7 @@ const CustomDatePicker = () => {
               return (
                 <motion.div
                   key={format(date, "yyyy-MM-dd")}
-                  className={`flex flex-col items-center justify-center w-16 h-16 cursor-pointer rounded-xl relative shrink-0 ${isSelected && 'text-white'}`}
+                  className={`flex flex-col items-center justify-center w-16 h-16 cursor-pointer text-zinc-500 rounded-xl relative shrink-0 ${isSelected && 'text-white'}`}
                   onClick={() => handleDateChange(date)}
                   custom={direction}
                   initial="hidden"
@@ -107,11 +109,13 @@ const CustomDatePicker = () => {
                   variants={variants}
                   transition={{ type: "spring", stiffness: 300, damping: 20, duration: 0.6 }}
                 >
-                  <div className="z-10 text-sm">{format(date, "EEE")}</div>
-                  <div className="z-10 text-lg">{format(date, "d")}</div>
+                  <div className={cn("z-10 text-sm",{
+                    'text-white':isSelected
+                  })}>{format(date, "EEE")}</div>
+                  <div className={cn("z-10 text-lg font-vazir font-bold",{'text-white':isSelected})}>{toLocalDateShort(date).split('/')[2]}</div>
                   {isSelected && (
                     <motion.div
-                      className="absolute bg-blue-200 top-0 left-0 w-16 h-16 rounded-xl shrink-0"
+                      className="absolute bg-sky-200 top-0 left-0 w-16 h-16 rounded-xl shrink-0"
                       layoutId="blue-square"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
