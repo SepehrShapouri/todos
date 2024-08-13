@@ -1,41 +1,19 @@
 //bg-sky-200
 "use client";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 
 import CustomDatePicker from "@/components/AnimatedDatePicker";
+import { createTodo } from "@/components/createTodo/actions";
+import CreateTodo from "@/components/createTodo/CreateTodo";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Button } from "@/components/ui/button";
 import {
   Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
+  CardContent
 } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from "@/components/ui/drawer";
 import toLocalDateShort from "@/lib/persian";
 import { cn } from "@/lib/utils";
 import { Pen, PlusIcon } from "lucide-react";
-import React, { useState } from "react";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { createTodo } from "@/components/createTodo/actions";
+import { useState } from "react";
 const TODOS = [
   {
     id: 1,
@@ -94,19 +72,6 @@ const TODOS = [
 ];
 function page() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
-  const [todoOptions, setTodoOptions] = useState({
-    title: "",
-    time:{hour:'',minute:''},
-    category: "",
-    color: "",
-    description: "",
-    completed:false,
-    dueDate:selectedDate
-  });
-  function addTodo(){
-    createTodo(todoOptions)
-  }
   return (
     <MaxWidthWrapper>
       <div className="w-full p-6 flex items-center justify-center flex-col gap-2">
@@ -153,137 +118,7 @@ function page() {
           );
         })}
       </div>
-      <div className="w-full h-[100px] fixed bottom-10 flex items-center justify-center">
-        <span
-          className="w-[70px] h-[70px] rounded-full shrink-0 bg-sky-200 flex items-center justify-center hover:bg-blue-300 transition-colors shadow-lg drop-shadow-md"
-          onClick={() => setAddTodoModal(true)}
-        >
-          <PlusIcon className="w-8 h-8 font-extrabold text-white" />
-        </span>
-      </div>
-      <Drawer open={addTodoModal}>
-        <DrawerContent className="pb-6">
-          <DrawerHeader>
-            <DrawerTitle>Add todo</DrawerTitle>
-            <DrawerDescription>
-              Add a new todo to your list for the due date
-            </DrawerDescription>
-          </DrawerHeader>
-          <div>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input id="title" placeholder="Buy groceries" value={todoOptions.title} onChange={(e)=>setTodoOptions((prev)=>({...prev,title:e.target.value}))}/>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">description</Label>
-                <Input id="description" placeholder="Buy groceries" value={todoOptions.description} onChange={(e)=>setTodoOptions((prev)=>({...prev,description:e.target.value}))}/>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="due-hours">Due Time (Hours)</Label>
-                  <Select id="due-hours" value={todoOptions.time.hour} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,time:{...prev.time,hour:e}}))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select hours" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 24 }, (_, i) => (
-                        <SelectItem
-                          key={i}
-                          value={i.toString().padStart(2, "0")}
-                        >
-                          {i.toString().padStart(2, "0")}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="due-minutes">Minutes</Label>
-                  <Select id="due-minutes" value={todoOptions.time.minute} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,time:{...prev.time,minute:e}}))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select minutes" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {Array.from({ length: 60 }, (_, i) => (
-                        <SelectItem
-                          key={i}
-                          value={i.toString().padStart(2, "0")}
-                        >
-                          {i.toString().padStart(2, "0")}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="color">Color</Label>
-                <Select id="color" value={todoOptions.color} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,color:e}))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select color" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="red">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-red-500" />
-                        Red
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="green">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-green-500" />
-                        Green
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="blue">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-blue-500" />
-                        Blue
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="yellow">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-yellow-500" />
-                        Yellow
-                      </div>
-                    </SelectItem>
-                    <SelectItem value="purple">
-                      <div className="flex items-center gap-2">
-                        <div className="h-4 w-4 rounded-full bg-purple-500" />
-                        Purple
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Category</Label>
-                <Select id="category" value={todoOptions.category} onValueChange={(e)=>setTodoOptions((prev)=>({...prev,category:e}))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="work">Work</SelectItem>
-                    <SelectItem value="personal">Personal</SelectItem>
-                    <SelectItem value="shopping">Shopping</SelectItem>
-                    <SelectItem value="chores">Chores</SelectItem>
-                    <SelectItem value="other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </div>
-          <DrawerFooter>
-            <Button className="bg-sky-200" onClick={addTodo}>Add</Button>
-            <DrawerClose>
-              <Button variant="secondary" className="w-full">
-                Never mind
-              </Button>
-            </DrawerClose>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <CreateTodo selectedDate={new Date(selectedDate)}/>
     </MaxWidthWrapper>
   );
 }
