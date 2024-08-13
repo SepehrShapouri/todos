@@ -79,9 +79,11 @@ function CreateTodo({selectedDate}:{selectedDate:Date}) {
     mutationKey:['add-todo-fn'],
     mutationFn:createTodo,
     onSuccess:(data)=>{
-      setAddTodoModal(false)
+      // setAddTodoModal(false)
+      console.log(data)
       toast.success("added new task")
-    }
+    },
+    onError:(err)=>console.log(err)
   })
 
   async function onSubmit(values: z.infer<typeof formSchema>) {

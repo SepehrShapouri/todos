@@ -12,66 +12,21 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import toLocalDateShort from "@/lib/persian";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
 import { Pen, PlusIcon } from "lucide-react";
-import { useState } from "react";
-const TODOS = [
-  {
-    id: 1,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-  {
-    id: 2,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-  {
-    id: 3,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-  {
-    id: 4,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-  {
-    id: 5,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-  {
-    id: 6,
-    color: "sky-200",
-    title: "برو خرید",
-    description: "خرید میوه",
-    time: "12:00",
-    date: "26th",
-    completed: false,
-  },
-];
+import { useEffect, useState } from "react";
+import { getTodos } from "./actions";
+
 function page() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
+  const formattedDate = selectedDate.toISOString().split("T")[0]
+  console.log(formattedDate)
+  const {data:todos,refetch} = useQuery({
+    queryKey:['todos']
+    ,
+    queryFn:async () => await getTodos(formattedDate)
+  })
+  useEffect(()=>{refetch()},[selectedDate])
   return (
     <MaxWidthWrapper>
       <div className="w-full p-6 flex items-center justify-center flex-col gap-2">
@@ -85,7 +40,7 @@ function page() {
       />
       <div className="flex flex-col gap-3 mt-4 max-h-[60svh] overflow-scroll pb-[2rem] items-center">
         <h1 className="text-xs px-2 text-sky-200 self-start">Todos</h1>
-        {TODOS.map((item) => {
+        {todos?.map((item) => {
           return (
             <Card className="w-full max-w-md font-vazir" dir="rtl">
               <CardContent className="grid gap-2 p-4 sm:p-6">

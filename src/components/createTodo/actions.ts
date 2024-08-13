@@ -19,6 +19,8 @@ export async function createTodo(todoData: todoData) {
   const { category, color, hours, minute, description, title, dueDate } =
     todoData;
   const formattedTime = `${hours}:${minute}`;
+  const formattedDate = dueDate.split('T')[0]
+  console.log(formattedDate)
   if (!todoData) {
     return { error: "Please complete all the required fields" };
   }
@@ -31,7 +33,7 @@ export async function createTodo(todoData: todoData) {
         time: formattedTime,
         description,
         userId: result!.user!.id,
-        dueDate,
+        dueDate:formattedDate,
       },
     });
    return res
