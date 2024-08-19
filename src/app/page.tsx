@@ -143,6 +143,7 @@ function page() {
         selectedDate={new Date(selectedDate)}
         initialValues={initialValues || null}
         id={todoId}
+        refetchTodos={refetch}
       />
     </>
   );

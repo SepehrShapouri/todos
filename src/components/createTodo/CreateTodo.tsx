@@ -57,11 +57,13 @@ export const formSchema = z.object({
 function CreateTodo({
   selectedDate,
   initialValues = null,
-  id
+  id,
+  refetchTodos,
 }: {
   selectedDate: Date;
   initialValues?: todoData | null;
-  id?: string
+  id?: string;
+  refetchTodos: () => void;
 }) {
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -111,6 +113,7 @@ function CreateTodo({
     onSuccess: (data) => {
       setAddTodoModal(false);
       console.log(data);
+      refetchTodos();
       toast.success("added new task"), refresh();
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.refetchQueries({ queryKey: ["todos"] });
@@ -123,9 +126,9 @@ function CreateTodo({
     if (isEdit && id) {
       const res = await edit({
         todoData: { ...values, dueDate: selectedDate.toISOString() },
-        id:id
+        id: id,
       });
-      return
+      return;
     }
     const res = await mutate({
       ...values,
@@ -277,9 +280,9 @@ function CreateTodo({
                   className="bg-sky-200 hover:bg-sky-400"
                   type="submit"
                   isLoading={isLoading || isEditing}
-                  loadingText={`${isLoading ? 'adding todo' : 'Updating todo'}`}
+                  loadingText={`${isLoading ? "Adding todo" : "Updating todo"}`}
                 >
-                  Add
+                  {isEdit ? "Update" : "Add"}
                 </Button>
               </DrawerFooter>
             </form>
