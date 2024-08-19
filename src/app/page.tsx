@@ -51,13 +51,6 @@ function page() {
       }
     );
   }
-  if (isLoading || isRefetching || isChangingTodoState) {
-    return (
-      <div className="h-[70svh] w-full flex items-center justify-center">
-        <Loader2 className="w-12 h-12 animate-spin text-sky-200 shrink-0" />
-      </div>
-    );
-  }
   return (
     <>
       <MaxWidthWrapper className="min-h-[93svh]">
@@ -65,7 +58,9 @@ function page() {
           selectedDate={selectedDate}
           setSelectedDate={setSelectedDate}
         />
-        {todos?.length ? (
+        {isLoading || isRefetching || isChangingTodoState ?       <div className="h-[70svh] w-full flex items-center justify-center">
+        <Loader2 className="w-12 h-12 animate-spin text-sky-200 shrink-0" />
+      </div> :<>        {todos?.length ? (
           <h1 className="py-4 text-muted-foreground">You have {todos!?.length} tasks for today!</h1>
         ) : null}
         <ScrollArea className="h-[500px] w-full">
@@ -101,7 +96,7 @@ function page() {
           ) : (
             <NoTodosComponent />
           )}
-        </ScrollArea>
+        </ScrollArea></>}
       </MaxWidthWrapper>
       <CreateTodo selectedDate={new Date(selectedDate)} />
     </>
