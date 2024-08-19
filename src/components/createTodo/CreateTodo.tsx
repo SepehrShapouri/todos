@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 //bg-sky-200
 import {
   Select,
@@ -37,7 +37,7 @@ import {
 import { CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { PlusIcon } from "lucide-react";
-import { createTodo } from "./actions";
+import { createTodo, todoData, updateTodo } from "./actions";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -54,20 +54,42 @@ export const formSchema = z.object({
   color: z.string().min(1, { message: "Please add the color of your task" }),
   dueDate: z.string().datetime(),
 });
-function CreateTodo({ selectedDate }: { selectedDate: Date }) {
-  console.log(selectedDate.toISOString());
+function CreateTodo({
+  selectedDate,
+  initialValues = null,
+  id
+}: {
+  selectedDate: Date;
+  initialValues?: todoData | null;
+  id?: string
+}) {
+  const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (initialValues == null) return;
+    setAddTodoModal(true);
+    setIsEdit(true);
+  }, [initialValues]);
+  console.log(initialValues);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    values: {
+      title: initialValues?.title || "",
+      color: initialValues?.color || "",
+      hours: initialValues?.hours || "",
+      minute: initialValues?.minute || "",
+      dueDate: selectedDate.toISOString(),
+    },
     defaultValues: {
-      title: "",
-      color: "",
-      hours: "",
-      minute: "",
+      title: initialValues?.title || "",
+      color: initialValues?.color || "",
+      hours: initialValues?.hours || "",
+      minute: initialValues?.minute || "",
       dueDate: selectedDate.toISOString(),
     },
   });
 
-  const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
   const { refresh } = useRouter();
   const queryClient = useQueryClient();
   const { mutate, isPending: isLoading } = useMutation({
@@ -83,13 +105,32 @@ function CreateTodo({ selectedDate }: { selectedDate: Date }) {
     },
     onError: (err) => console.log(err),
   });
+  const { mutate: edit, isPending: isEditing } = useMutation({
+    mutationKey: ["edit-todo-fn"],
+    mutationFn: updateTodo,
+    onSuccess: (data) => {
+      setAddTodoModal(false);
+      console.log(data);
+      toast.success("added new task"), refresh();
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.refetchQueries({ queryKey: ["todos"] });
+      form.reset();
+    },
+    onError: (err) => console.log(err),
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    if (isEdit && id) {
+      const res = await edit({
+        todoData: { ...values, dueDate: selectedDate.toISOString() },
+        id:id
+      });
+      return
+    }
     const res = await mutate({
       ...values,
       dueDate: selectedDate.toISOString(),
     });
-    console.log(res);
   }
   return (
     <>
@@ -235,8 +276,8 @@ function CreateTodo({ selectedDate }: { selectedDate: Date }) {
                 <Button
                   className="bg-sky-200 hover:bg-sky-400"
                   type="submit"
-                  isLoading={isLoading}
-                  loadingText="adding todo"
+                  isLoading={isLoading || isEditing}
+                  loadingText={`${isLoading ? 'adding todo' : 'Updating todo'}`}
                 >
                   Add
                 </Button>
