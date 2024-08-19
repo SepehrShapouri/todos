@@ -1,14 +1,9 @@
-import type { Metadata, Viewport } from "next";
-import { Concert_One, Exo_2, Inter, Noto_Sans_Hatran } from "next/font/google";
-import "./globals.css";
 import Providers from "@/components/Providers/Providers";
-import RootHeader from "@/components/RootHeader";
+import type { Metadata, Viewport } from "next";
+import { Exo_2 } from "next/font/google";
+import "../globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
 const exo = Exo_2({subsets:['latin']})
-const concert = Concert_One({subsets:['latin'],weight:["400"]})
-const noto = Noto_Sans_Hatran({subsets:["hatran"],weight:["400"]})
-
 const APP_NAME = "TODOS";
 const APP_DEFAULT_TITLE = "TODOS";
 const APP_TITLE_TEMPLATE = "TODOS";
@@ -60,11 +55,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={noto.className}>
-        <Providers>
-          <RootHeader />
-          {children}
-        </Providers>
+      <body className={exo.className}>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

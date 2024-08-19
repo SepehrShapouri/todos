@@ -6,10 +6,11 @@ import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { login } from "../actions";
+import AuthForm from "../AuthForm";
 
 function page() {
   return (
-    <MaxWidthWrapper>
+    <MaxWidthWrapper className="from-white to-white min-h-[85svh]">
       <section className="p-[2rem] min-h-[95dvh] flex flex-col items-center  justify-between">
         <div>
           <Image
@@ -37,7 +38,8 @@ function page() {
               to get started.
             </span>
           </div>
-          <form className="flex flex-col gap-[1rem]" action={login}>
+          <AuthForm formType="login"/>
+          {/* <form className="flex flex-col gap-[1rem]" action={login}>
             <span>
               <Label className="text-gray-500 text-sm" htmlFor="username">
                 Username
@@ -59,7 +61,7 @@ function page() {
               />
             </span>
             <Button className="bg-sky-200 w-full">Continue</Button>
-          </form>
+          </form> */}
         </div>
       </section>
     </MaxWidthWrapper>

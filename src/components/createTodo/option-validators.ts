@@ -1,3 +1,7 @@
+//border-l-blue-400
+//border-l-red-400
+//border-l-green-400
+//border-l-orange-400
 //bg-blue-400
 //bg-red-400
 //bg-green-400

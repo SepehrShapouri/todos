@@ -8,3 +8,10 @@ export async function getTodos(date:string){
     console.log(todos)
     return todos
 }
+export async function hanleTodoState({state,id}:{state:boolean,id:string}){
+const updatedTodo  = await db.todos.update({where:{id},data:{
+    completed:state
+}})
+console.log(updatedTodo)
+return updatedTodo
+}

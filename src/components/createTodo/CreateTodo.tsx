@@ -24,7 +24,7 @@ import { z } from "zod";
 import { CATEGORIES, COLORS } from "./option-validators";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {useMutation} from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   Form,
   FormControl,
@@ -39,14 +39,12 @@ import { Button } from "../ui/button";
 import { PlusIcon } from "lucide-react";
 import { createTodo } from "./actions";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const formSchema = z.object({
   title: z.string().min(2, {
     message: "Please add the title of your task",
   }),
-  description: z
-    .string()
-    .min(2, { message: "Please add the description of your task" }),
   hours: z
     .string()
     .min(1, { message: "Please add the due time for your task" }),
@@ -54,53 +52,57 @@ export const formSchema = z.object({
     .string()
     .min(1, { message: "Please add the due time for your task" }),
   color: z.string().min(1, { message: "Please add the color of your task" }),
-  category: z
-    .string()
-    .min(2, { message: "Please add the cateogry of your task" }),
-    dueDate:z.string().datetime()
+  dueDate: z.string().datetime(),
 });
-function CreateTodo({selectedDate}:{selectedDate:Date}) {
-  console.log(selectedDate.toISOString())
+function CreateTodo({ selectedDate }: { selectedDate: Date }) {
+  console.log(selectedDate.toISOString());
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: "",
-      description: "",
       color: "",
-      category: "",
       hours: "",
       minute: "",
-      dueDate:selectedDate.toISOString()
+      dueDate: selectedDate.toISOString(),
     },
   });
-  
+
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
-  const {mutate,isPending:isLoading} = useMutation({
-    mutationKey:['add-todo-fn'],
-    mutationFn:createTodo,
-    onSuccess:(data)=>{
-      // setAddTodoModal(false)
-      console.log(data)
-      toast.success("added new task")
+  const { refresh } = useRouter();
+  const queryClient = useQueryClient();
+  const { mutate, isPending: isLoading } = useMutation({
+    mutationKey: ["add-todo-fn"],
+    mutationFn: createTodo,
+    onSuccess: (data) => {
+      setAddTodoModal(false);
+      console.log(data);
+      toast.success("added new task"), refresh();
+      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.refetchQueries({ queryKey: ["todos"] });
+      form.reset();
     },
-    onError:(err)=>console.log(err)
-  })
+    onError: (err) => console.log(err),
+  });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const res = await mutate(values)
-    console.log(res)
+    const res = await mutate({
+      ...values,
+      dueDate: selectedDate.toISOString(),
+    });
+    console.log(res);
   }
   return (
     <>
-      <div className="w-full h-[100px] fixed bottom-10 flex items-center justify-center">
+      <div className="w-full h-[100px] fixed bottom-8 flex items-center justify-center">
         <span
-          className="w-[70px] h-[70px] rounded-full shrink-0 bg-sky-200 flex items-center justify-center hover:bg-blue-300 transition-colors shadow-lg drop-shadow-md"
+          className="w-[60px] h-[60px] rounded-full shrink-0 bg-white flex items-center justify-center hover:bg-blue-300 transition-colors shadow-lg"
           onClick={() => setAddTodoModal(true)}
         >
-          <PlusIcon className="w-8 h-8 font-extrabold text-white" />
+          <PlusIcon className="w-8 h-8 font-extrabold text-sky-200" />
         </span>
       </div>
-      <Drawer open={addTodoModal} onClose={()=>setAddTodoModal(false)}>
+
+      <Drawer open={addTodoModal}>
         <DrawerContent className="pb-6">
           <DrawerHeader>
             <DrawerTitle>Add todo</DrawerTitle>
@@ -121,21 +123,6 @@ function CreateTodo({selectedDate}:{selectedDate:Date}) {
                           <FormLabel>Title</FormLabel>
                           <FormControl>
                             <Input placeholder="Title" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="description"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Description</FormLabel>
-                          <FormControl>
-                            <Input placeholder="description" {...field} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -242,55 +229,29 @@ function CreateTodo({selectedDate}:{selectedDate:Date}) {
                       )}
                     />
                   </div>
-                  <div className="space-y-2">
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Task category</FormLabel>
-                          <FormControl>
-                            <Select
-                              onValueChange={field.onChange}
-                              defaultValue={field.value}
-                            >
-                              <SelectTrigger>
-                                <SelectValue placeholder="Select category" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {CATEGORIES.map((item) => (
-                                  <SelectItem
-                                    value={item.value}
-                                    className="flex items-center"
-                                  >
-                                    <p className="flex items-center gap-2">
-                                      {<item.icon className="w-3 h-3" />}
-                                      {item.title}
-                                    </p>
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
                 </CardContent>
               </div>
-              <DrawerFooter>
-                <Button className="bg-sky-200 hover:bg-sky-400" type="submit" isLoading={isLoading} loadingText="adding todo">
+              <DrawerFooter className="px-6">
+                <Button
+                  className="bg-sky-200 hover:bg-sky-400"
+                  type="submit"
+                  isLoading={isLoading}
+                  loadingText="adding todo"
+                >
                   Add
                 </Button>
               </DrawerFooter>
             </form>
           </Form>
-          <DrawerClose className="pb-8">
-                  <Button variant="secondary" className="w-full">
-                    Never mind
-                  </Button>
-                </DrawerClose>
+          <DrawerClose className="pb-6 px-6">
+            <Button
+              variant="secondary"
+              className="w-full"
+              onClick={() => setAddTodoModal(false)}
+            >
+              Never mind
+            </Button>
+          </DrawerClose>
         </DrawerContent>
       </Drawer>
     </>

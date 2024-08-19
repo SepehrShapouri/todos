@@ -11,7 +11,7 @@ function MaxWidthWrapper({
   return (
     <div
       className={cn(
-        "h-full min-h-[100dvh] mx-auto w-full max-w-[512px] px-2.5 bg-sky-50/20",
+        "h-full min-h-[91.9svh] mx-auto w-full max-w-[512px] px-2.5 bg-gradient-to-b from-white to-sky-50",
         className
       )}
     >

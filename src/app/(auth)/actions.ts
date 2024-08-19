@@ -1,13 +1,12 @@
 "use server";
-
-import { hash, verify } from "@node-rs/argon2";
+import { hash } from "@node-rs/argon2";
 import { cookies } from "next/headers";
-
 import { redirect } from "next/navigation";
 import { generateIdFromEntropySize } from "lucia";
+import { verify } from "@node-rs/argon2";
 import { validateRequest } from "@/lib/validate-request";
-import { lucia } from "@/lib/auth";
 import { db } from "../../../db";
+import { lucia } from "@/lib/auth";
 interface ActionResult {
   error: string;
 }
@@ -71,7 +70,7 @@ export async function signup(_:any,formData: FormData): Promise<ActionResult> {
   return redirect("/");
 }
 
-export async function login(formData: FormData): Promise<ActionResult> {
+export async function login(_:any,formData: FormData): Promise<ActionResult> {
   console.log("begin login");
   const username = formData.get("username");
   const email = formData.get("email")!;
@@ -99,7 +98,7 @@ export async function login(formData: FormData): Promise<ActionResult> {
 
   const existingUser = await db.user.findUnique({
     where: {
-        username
+      username,
     },
   });
   if (!existingUser) {
