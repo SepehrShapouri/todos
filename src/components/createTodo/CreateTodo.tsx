@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 //bg-sky-200
 import {
   Select,
@@ -59,11 +59,13 @@ function CreateTodo({
   initialValues = null,
   id,
   refetchTodos,
+  setTodoId,
 }: {
   selectedDate: Date;
   initialValues?: todoData | null;
   id?: string;
   refetchTodos: () => void;
+  setTodoId: Dispatch<SetStateAction<string>>;
 }) {
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
   const [isEdit, setIsEdit] = useState<boolean>(false);
@@ -118,6 +120,7 @@ function CreateTodo({
       queryClient.invalidateQueries({ queryKey: ["todos"] });
       queryClient.refetchQueries({ queryKey: ["todos"] });
       form.reset();
+      setTodoId("")
     },
     onError: (err) => console.log(err),
   });

@@ -144,6 +144,7 @@ function page() {
         initialValues={initialValues || null}
         id={todoId}
         refetchTodos={refetch}
+      setTodoId={setTodoId}
       />
     </>
   );
