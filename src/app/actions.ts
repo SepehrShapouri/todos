@@ -1,30 +1,23 @@
 "use server";
 
+import { validateRequest } from "@/lib/validate-request";
 import { db } from "../../db";
 
 export async function getTodos(date: string) {
-  console.log(date);
-  const todos = await db.todos.findMany({ where: { dueDate: date } });
+  const user = await validateRequest();
+  const todos = await db.todos.findMany({
+    where: { dueDate: date, userId: user!.user?.id },
+    orderBy: { createdAt: "desc" },
+  });
   console.log(todos);
   return todos;
 }
-export async function hanleTodoState({
-  state,
-  id,
-}: {
-  state: boolean;
-  id: string;
-}) {
-  const updatedTodo = await db.todos.update({
-    where: { id },
-    data: {
-      completed: state,
-    },
+
+export async function getSingleTodo(todoId: string) {
+  const user = await validateRequest();
+  if (!user) throw Error("unauthenticated");
+  const todo = await db.todos.findUnique({
+    where: { id: todoId, userId: user?.user?.id },
   });
-  console.log(updatedTodo);
-  return updatedTodo;
-}
-export async function deleteTodo(id: string) {
-  const deletedTodo = await db.todos.delete({ where: { id } });
-  return deletedTodo
+  return todo;
 }

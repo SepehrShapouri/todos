@@ -1,13 +1,6 @@
 "use client";
-import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useState } from "react";
 //bg-sky-200
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import {
   Drawer,
   DrawerClose,
@@ -16,30 +9,33 @@ import {
   DrawerFooter,
   DrawerHeader,
   DrawerTitle,
-  DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { z } from "zod";
-import { CATEGORIES, COLORS } from "./option-validators";
-import { useForm } from "react-hook-form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { Pen, PlusIcon } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Button } from "../ui/button";
+import { CardContent } from "../ui/card";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "../ui/form";
-import { CardContent } from "../ui/card";
-import { Button } from "../ui/button";
-import { PlusIcon } from "lucide-react";
-import { createTodo, todoData, updateTodo } from "./actions";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { COLORS } from "./createTodo/option-validators"; 
+import { useCreateTodo } from "./createTodo/mutations";
+import { useQuery } from "@tanstack/react-query";
+import { getSingleTodo } from "@/app/actions";
 
 export const formSchema = z.object({
   title: z.string().min(2, {
@@ -54,101 +50,38 @@ export const formSchema = z.object({
   color: z.string().min(1, { message: "Please add the color of your task" }),
   dueDate: z.string().datetime(),
 });
-function CreateTodo({
-  selectedDate,
-  initialValues = null,
-  id,
-  refetchTodos,
-  setTodoId,
-}: {
-  selectedDate: Date;
-  initialValues?: todoData | null;
-  id?: string;
-  refetchTodos: () => void;
-  setTodoId: Dispatch<SetStateAction<string>>;
-}) {
+function EditTodo({ selectedDate,todoId }: { selectedDate: Date,todoId:string }) {
+    const {data} = useQuery({
+        queryKey:['edit-todo',todoId],
+        queryFn:async ()=> getSingleTodo(todoId)
+    })
+    console.log(data)
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
-  const [isEdit, setIsEdit] = useState<boolean>(false);
 
-  useEffect(() => {
-    if (initialValues == null) return;
-    setAddTodoModal(true);
-    setIsEdit(true);
-  }, [initialValues]);
-  console.log(initialValues);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    values: {
-      title: initialValues?.title || "",
-      color: initialValues?.color || "",
-      hours: initialValues?.hours || "",
-      minute: initialValues?.minute || "",
-      dueDate: selectedDate.toISOString(),
-    },
     defaultValues: {
-      title: initialValues?.title || "",
-      color: initialValues?.color || "",
-      hours: initialValues?.hours || "",
-      minute: initialValues?.minute || "",
+      title: "",
+      color: "",
+      hours: "",
+      minute: "",
       dueDate: selectedDate.toISOString(),
     },
   });
-
-  const { refresh } = useRouter();
-  const queryClient = useQueryClient();
-  const { mutate, isPending: isLoading } = useMutation({
-    mutationKey: ["add-todo-fn"],
-    mutationFn: createTodo,
-    onSuccess: (data) => {
-      setAddTodoModal(false);
-      console.log(data);
-      toast.success("added new task"), refresh();
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      queryClient.refetchQueries({ queryKey: ["todos"] });
-      form.reset();
-    },
-    onError: (err) => console.log(err),
-  });
-  const { mutate: edit, isPending: isEditing } = useMutation({
-    mutationKey: ["edit-todo-fn"],
-    mutationFn: updateTodo,
-    onSuccess: (data) => {
-      setAddTodoModal(false);
-      console.log(data);
-      refetchTodos();
-      toast.success("added new task"), refresh();
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      queryClient.refetchQueries({ queryKey: ["todos"] });
-      form.reset();
-      setTodoId("")
-    },
-    onError: (err) => console.log(err),
-  });
-
+  const { mutate, isPending: isLoading } = useCreateTodo(selectedDate);
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (isEdit && id) {
-      const res = await edit({
-        todoData: { ...values, dueDate: selectedDate.toISOString() },
-        id: id,
-      });
-      return;
-    }
-    const res = await mutate({
-      ...values,
-      dueDate: selectedDate.toISOString(),
-    });
+    mutate(
+      { ...values, dueDate: selectedDate.toISOString() },
+      {
+        onSuccess: () => {
+          setAddTodoModal(false);
+        },
+      }
+    );
   }
   return (
     <>
-      <div className="w-full h-[100px] fixed bottom-8 flex items-center justify-center">
-        <span
-          className="w-[60px] h-[60px] rounded-full shrink-0 bg-white flex items-center justify-center hover:bg-blue-300 transition-colors shadow-lg"
-          onClick={() => setAddTodoModal(true)}
-        >
-          <PlusIcon className="w-8 h-8 font-extrabold text-sky-200" />
-        </span>
-      </div>
-
+    <Button size="icon" variant="ghost"><Pen className="size-4 fill-sky-400 text-sky-400"/></Button>
       <Drawer open={addTodoModal}>
         <DrawerContent className="pb-6">
           <DrawerHeader>
@@ -280,12 +213,13 @@ function CreateTodo({
               </div>
               <DrawerFooter className="px-6">
                 <Button
+                  disabled={isLoading}
                   className="bg-sky-200 hover:bg-sky-400"
                   type="submit"
-                  isLoading={isLoading || isEditing}
+                  isLoading={isLoading}
                   loadingText={`${isLoading ? "Adding todo" : "Updating todo"}`}
                 >
-                  {isEdit ? "Update" : "Add"}
+                  Add
                 </Button>
               </DrawerFooter>
             </form>
@@ -305,4 +239,4 @@ function CreateTodo({
   );
 }
 
-export default CreateTodo;
+export default EditTodo
