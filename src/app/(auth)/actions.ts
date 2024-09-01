@@ -13,8 +13,7 @@ interface ActionResult {
 export async function signup(_:any,formData: FormData): Promise<ActionResult> {
   const username = formData.get("username");
   const email = formData.get("email")!;
-  // username must be between 4 ~ 31 characters, and only consists of lowercase letters, 0-9, -, and _
-  // keep in mind some database (e.g. mysql) are case insensitive
+
   if (
     typeof username !== "string" ||
     username.length < 3 ||
@@ -41,15 +40,14 @@ export async function signup(_:any,formData: FormData): Promise<ActionResult> {
     };
   }
   const passwordHash = await hash(password, {
-    // recommended minimum parameters
+
     memoryCost: 19456,
     timeCost: 2,
     outputLen: 32,
     parallelism: 1,
   });
-  const userId = generateIdFromEntropySize(10); // 16 characters long
+  const userId = generateIdFromEntropySize(10); 
 
-  // TODO: check if username is already used
   await db.user.create({
     data: {
       id: userId,
@@ -71,7 +69,7 @@ export async function signup(_:any,formData: FormData): Promise<ActionResult> {
 }
 
 export async function login(_:any,formData: FormData): Promise<ActionResult> {
-  console.log("begin login");
+
   const username = formData.get("username");
   const email = formData.get("email")!;
   if (

@@ -1,8 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Concert_One, Exo_2, Inter, Noto_Sans_Hatran } from "next/font/google";
 import "./globals.css";
-import Providers from "@/components/Providers/Providers";
-import RootHeader from "@/components/RootHeader";
 
 const inter = Inter({ subsets: ["latin"] });
 const exo = Exo_2({subsets:['latin']})
@@ -65,10 +63,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={noto.className}>
-        <Providers>
-          <RootHeader />
           {children}
-        </Providers>
       </body>
     </html>
   );

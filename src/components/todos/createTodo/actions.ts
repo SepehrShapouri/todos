@@ -11,6 +11,7 @@ export interface todoData {
   hours: string;
   minute: string;
   dueDate: string;
+  completed?:boolean
 }
 
 export async function createTodo(todoData:todoData) {

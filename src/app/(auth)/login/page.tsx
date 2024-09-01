@@ -1,11 +1,6 @@
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { login } from "../actions";
 import AuthForm from "../AuthForm";
 
 function page() {
@@ -38,7 +33,7 @@ function page() {
               to get started.
             </span>
           </div>
-          <AuthForm formType="login"/>
+          <AuthForm formType="login" />
           {/* <form className="flex flex-col gap-[1rem]" action={login}>
             <span>
               <Label className="text-gray-500 text-sm" htmlFor="username">

@@ -1,17 +1,8 @@
-'use client'
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
-import { signup } from "../actions";
-import { useFormState } from "react-dom";
 import AuthForm from "../AuthForm";
-type State =any
 function page() {
-  const [state,action] = useFormState<State, FormData>(signup,{state:'',error:''})
   return (
     <MaxWidthWrapper className="from-white to-white">
       <section className="p-[2rem] min-h-[95dvh] flex flex-col items-center  justify-between">

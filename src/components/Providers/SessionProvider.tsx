@@ -16,6 +16,7 @@ export default function SessionProvider({
   value,
 }: React.PropsWithChildren<{ value: SessionContext }>) {
   const client = new QueryClient();
+  
   return (
     <SessionContext.Provider value={value}>
       <QueryClientProvider client={client}>{children}</QueryClientProvider>

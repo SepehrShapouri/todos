@@ -69,6 +69,7 @@ function CreateTodo({ selectedDate }: { selectedDate: Date }) {
       {
         onSuccess: () => {
           setAddTodoModal(false);
+          form.reset()
         },
       }
     );

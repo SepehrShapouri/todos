@@ -1,4 +1,3 @@
-import Providers from "@/components/Providers/Providers";
 import type { Metadata, Viewport } from "next";
 import { Exo_2 } from "next/font/google";
 import "../globals.css";
@@ -60,7 +59,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={exo.className}>
-        <Providers>{children}</Providers>
+       {children}
       </body>
     </html>
   );

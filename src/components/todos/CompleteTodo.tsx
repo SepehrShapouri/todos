@@ -1,19 +1,20 @@
-'use client'
-import React from "react";
-import { Button } from "../ui/button";
-import { Trash } from "lucide-react";
-import { useDeleteTodo } from "./mutations";
-type DeleteTodoProps = {
+"use client";
+import { Checkbox } from "../ui/checkbox";
+import { useUpdateTodo } from "./mutations";
+type CompleteTodoProps = {
   todoId: string;
-  selectedDate:Date
+  keyDate: string;
+  completed: boolean;
 };
-function DeleteTodo({ todoId,selectedDate }: DeleteTodoProps) {
-    const {mutate,isPending} = useDeleteTodo(selectedDate)
+function CompleteTodo({ completed, todoId, keyDate }: CompleteTodoProps) {
+  const { mutate, isPending } = useUpdateTodo(keyDate);
   return (
-    <Button variant="ghost" size="icon" onClick={()=>mutate(todoId)} iconLoading={isPending}>
-      <Trash  className="size-4 text-destructive"/>
-    </Button>
+    <Checkbox
+      checked={completed}
+   
+      onCheckedChange={(e)=>mutate({completed:!completed,id:todoId})}
+    />
   );
 }
 
-export default DeleteTodo;
+export default CompleteTodo;
