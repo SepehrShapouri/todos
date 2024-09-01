@@ -130,7 +130,7 @@ const CustomDatePicker = ({ selectedDate, setSelectedDate }) => {
                       "text-white": isSelected,
                     })}
                   >
-                    {toEnglishNumbers(toLocalDateShort(date)).split("/")[2]}
+                    {toLocalDateShort(date).split("/")[2]}
                   </div>
                   {isSelected && (
                     <motion.div
