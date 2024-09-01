@@ -3,16 +3,16 @@
 import CustomDatePicker from "@/components/AnimatedDatePicker";
 import MaxWidthWrapper from "@/components/MaxWidthWrapper";
 import NoTodosComponent from "@/components/NoTodosComponent";
+import CompleteTodo from "@/components/todos/CompleteTodo";
 import CreateTodo from "@/components/todos/createTodo/CreateTodo";
 import DeleteTodo from "@/components/todos/DeleteTodo";
 import EditTodo from "@/components/todos/EditTodo";
-import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { getTodos } from "./actions";
-import CompleteTodo from "@/components/todos/CompleteTodo";
 
 function page() {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -38,14 +38,15 @@ function page() {
 
         <>
           {" "}
-          {todos?.length ? (
+          {!isLoading && todos?.length ? (
             <h1 className="py-4 text-muted-foreground">
               You have {todos!?.filter((item) => !item.completed)?.length || 0}{" "}
               tasks for today!
             </h1>
           ) : null}
           <ScrollArea className="h-[600px] w-full">
-            {todos?.length ? (
+            {isLoading && <div className="w-full h-[90svh] flex items-center justify-center"><Loader2 className="text-sky-200 animate-spin size-12"/></div>}
+            {!isLoading && todos?.length ? (
               <div className="flex flex-col gap-3  pb-[2rem] items-center shrink-0">
                 {todos?.map((item) => {
                   return (

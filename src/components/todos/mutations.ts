@@ -5,7 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
-import { deleteTodos, updateTodo } from "./actions";
+import { deleteTodos, editTodo, updateTodo } from "./actions";
 import { todoData } from "./createTodo/actions";
 import { Todos } from "@prisma/client";
 
@@ -80,6 +80,42 @@ export function useUpdateTodo(keyDate: string) {
       toast({
         variant: "destructive",
         description: "failed to update the following todo, please try again.",
+      });
+    },
+  });
+  return { mutate, isPending };
+}
+
+export function useEditTodo(keyDate: string) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { mutate, isPending } = useMutation({
+    mutationKey: ["create-todo"],
+    mutationFn: editTodo,
+    onSuccess: async (edittedTodo) => {
+      const queryFilter = {
+        queryKey: ["todos", keyDate],
+      } satisfies QueryFilters;
+      await queryClient.cancelQueries(queryFilter);
+
+      queryClient.setQueryData(queryFilter.queryKey, (todos?: todoData[]) => {
+        const todosCopy = [...todos!];
+        const updatedTodos = todosCopy.map((todo) =>
+          todo.id === edittedTodo.id ? edittedTodo : todo
+        );
+        return updatedTodos;
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: queryFilter.queryKey,
+      });
+      toast({ description: "Editted Todo" });
+    },
+    onError: () => {
+      toast({
+        variant: "destructive",
+        description: "failed to Edit Todo, please try again.",
       });
     },
   });
