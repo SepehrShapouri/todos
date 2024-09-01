@@ -48,7 +48,7 @@ export const formSchema = z.object({
   color: z.string().min(1, { message: "Please add the color of your task" }),
   dueDate: z.string().datetime(),
 });
-function CreateTodo({ selectedDate }: { selectedDate: Date }) {
+function CreateTodo({ selectedDate,keyDate }: { selectedDate: Date ,keyDate:string}) {
   const [addTodoModal, setAddTodoModal] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -62,7 +62,7 @@ function CreateTodo({ selectedDate }: { selectedDate: Date }) {
     },
   });
 
-  const { mutate, isPending: isLoading } = useCreateTodo(selectedDate);
+  const { mutate, isPending: isLoading } = useCreateTodo(keyDate);
   async function onSubmit(values: z.infer<typeof formSchema>) {
     mutate(
       { ...values, dueDate: selectedDate.toISOString() },

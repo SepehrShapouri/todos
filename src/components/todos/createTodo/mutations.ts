@@ -3,7 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { QueryFilters, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createTodo, todoData } from "./actions";
 
-export function useCreateTodo(selectedDate:Date) {
+export function useCreateTodo(keyDate:string) {
     const { toast } = useToast();
     const queryClient = useQueryClient();
     const {user} = useSession()
@@ -13,7 +13,7 @@ export function useCreateTodo(selectedDate:Date) {
       mutationFn: createTodo,
       onSuccess: async (newTodo) => {
         const queryFilter = {
-          queryKey: ["todos",selectedDate],
+          queryKey: ["todos",keyDate],
         } satisfies QueryFilters;
         await queryClient.cancelQueries(queryFilter);
   

@@ -88,7 +88,7 @@ function page() {
           </ScrollArea>
         </>
       </MaxWidthWrapper>
-      <CreateTodo selectedDate={new Date(selectedDate)} />
+      <CreateTodo selectedDate={new Date(selectedDate)} keyDate={new Date(selectedDate).toLocaleDateString()} />
     </>
   );
 }
