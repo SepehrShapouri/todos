@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { format, addDays } from "date-fns";
 import { LayoutGroup, motion, AnimatePresence } from "framer-motion";
-import toLocalDateShort, { toEnglishNumbers } from "@/lib/persian";
+import toLocalDateShort, { getFarsiWeekDay, toEnglishNumbers } from "@/lib/persian";
 import { cn } from "@/lib/utils";
 
 const CustomDatePicker = ({ selectedDate, setSelectedDate }) => {
@@ -119,11 +119,11 @@ const CustomDatePicker = ({ selectedDate, setSelectedDate }) => {
                   }}
                 >
                   <div
-                    className={cn("z-10 text-sm", {
+                    className={cn("z-10 text-sm font-vazir", {
                       "text-white": isSelected,
                     })}
                   >
-                    {format(date, "EEE")}
+                    {getFarsiWeekDay(format(date, "EEE"))}
                   </div>
                   <div
                     className={cn("z-10 text-lg font-vazir font-bold", {

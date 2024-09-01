@@ -9,3 +9,19 @@ export function toEnglishNumbers(farsiDate:string) {
 export default function toLocalDateShort(date:Date){
     return new Date(date).toLocaleDateString("fa-IR")
 }
+
+
+export function getFarsiWeekDay(weekDay:string){
+  const persianWeekDays:Array<{englishTitle:string,farsiTitle:string}> = [
+    {englishTitle:'Fri',farsiTitle:'جمعه'},
+    {englishTitle:'Sat',farsiTitle:'شنبه'},
+    {englishTitle:'Sun',farsiTitle:'یک شنبه'},
+    {englishTitle:'Mon',farsiTitle:'دوشنبه'},
+    {englishTitle:'Tue',farsiTitle:'سه شنبه'},
+    {englishTitle:'Wed',farsiTitle:'چهارشنبه'},
+    {englishTitle:'Thu',farsiTitle:'پنجشنبه'},
+  ]
+  const farsiDay = persianWeekDays.find((day)=>(day.englishTitle === weekDay))
+  console.log(farsiDay,weekDay)
+  return farsiDay?.farsiTitle
+}
