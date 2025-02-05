@@ -44,3 +44,6 @@ next-env.d.ts
 **/public/sw.js.map
 **/public/workbox-*.js.map
 **/public/worker-*.js.map
+branch_structure.json
+temp_auto_push.bat
+temp_interactive_push.bat
